@@ -1,0 +1,51 @@
+
+.upload-song {
+  background-color: white; 
+  color: black; 
+  padding: 20px; 
+  border-radius: 8px; 
+  max-width: 400px; 
+  margin: 0 auto; 
+}
+
+.upload-song h2 {
+  text-align: center; 
+}
+
+.upload-song form {
+  display: flex; 
+  flex-direction: column; 
+}
+
+.upload-song form div {
+  margin-bottom: 15px;
+}
+
+.upload-song form label {
+  margin-bottom: 5px; 
+}
+
+.upload-song form input[type="text"], .upload-song form input[type="file"] {
+  padding: 10px; 
+  border: 1px solid #da7fbb; 
+  border-radius: 4px; 
+}
+
+.upload-song form button {
+  padding: 10px; 
+  border: none; 
+  border-radius: 4px; 
+  background-color: rgb(255, 0, 179); 
+  color: white; 
+  cursor: pointer;
+}
+
+.error {
+  color: rgb(185, 31, 31);
+  margin-top: 10px; 
+}
+
+.success {
+  color: green; 
+  margin-top: 10px;
+}
