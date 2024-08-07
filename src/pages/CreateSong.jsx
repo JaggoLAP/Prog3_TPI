@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
+import Layout from '../components/Layout';
 
 const CreateSongPage = () => {
   const [songData, setSongData] = useState({
@@ -69,7 +70,7 @@ const CreateSongPage = () => {
 
       const data = await response.json();
       console.log('Canción creada:', data);
-      navigate('/songs');
+      navigate('/my-songs');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -78,85 +79,84 @@ const CreateSongPage = () => {
   };
 
   return (
-    <div className="hero is-fullheight" style={{
-      background: "url('https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzMzczODV8MHwxfHJhbmRvbXx8fHx8fHx8fDE3MjI1NTMzMjd8&ixlib=rb-4.0.3&q=80&w=1080') center center",
-      backgroundSize: "cover"
-    }}>
-      <div className="hero-body">
-        <div className="container">
-          <div className="box">
-            <h2 className="title is-2 has-text-centered">Crear Nueva Canción</h2>
-            {error && <p className="notification is-danger">{error}</p>}
-            <form onSubmit={handleSubmit}>
-              <div className="field">
-                <label className="label">Título *</label>
-                <div className="control">
-                  <input 
-                    className="input" 
-                    type="text" 
-                    name="title" 
-                    value={songData.title} 
-                    onChange={handleChange}
-                    required 
-                  />
+    <Layout>
+      <section className="hero is-fullheight">
+        <div className="hero-body">
+          <div className="container">
+            <div className="box">
+              <h2 className="title is-2 has-text-centered">Crear Nueva Canción</h2>
+              {error && <p className="notification is-danger">{error}</p>}
+              <form onSubmit={handleSubmit}>
+                <div className="field">
+                  <label className="label">Título *</label>
+                  <div className="control">
+                    <input 
+                      className="input" 
+                      type="text" 
+                      name="title" 
+                      value={songData.title} 
+                      onChange={handleChange}
+                      required 
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="field">
-                <label className="label">Año de lanzamiento</label>
-                <div className="control">
-                  <input 
-                    className="input" 
-                    type="number" 
-                    name="year" 
-                    value={songData.year} 
-                    onChange={handleChange}
-                  />
+                <div className="field">
+                  <label className="label">Año de lanzamiento</label>
+                  <div className="control">
+                    <input 
+                      className="input" 
+                      type="number" 
+                      name="year" 
+                      value={songData.year} 
+                      onChange={handleChange}
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="field">
-                <label className="label">Álbum ID</label>
-                <div className="control">
-                  <input 
-                    className="input" 
-                    type="number" 
-                    name="album" 
-                    value={songData.album} 
-                    onChange={handleChange}
-                  />
+                <div className="field">
+                  <label className="label">Álbum ID</label>
+                  <div className="control">
+                    <input 
+                      className="input" 
+                      type="number" 
+                      name="album" 
+                      value={songData.album} 
+                      onChange={handleChange}
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="field">
-                <label className="label">Archivo de canción (MP3)</label>
-                <div className="control">
-                  <input 
-                    className="input" 
-                    type="file" 
-                    name="song_file" 
-                    onChange={handleFileChange}
-                    accept=".mp3"
-                  />
+                <div className="field">
+                  <label className="label">Archivo de canción (MP3)</label>
+                  <div className="control">
+                    <input 
+                      className="input" 
+                      type="file" 
+                      name="song_file" 
+                      onChange={handleFileChange}
+                      accept=".mp3"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="field">
-                <div className="control">
-                  <button 
-                    className={`button is-primary ${isLoading ? 'is-loading' : ''}`} 
-                    type="submit"
-                    disabled={isLoading}
-                  >
-                    Crear Canción
-                  </button>
+                <div className="field">
+                  <div className="control">
+                    <button 
+                      className={`button is-primary ${isLoading ? 'is-loading' : ''}`} 
+                      type="submit"
+                      disabled={isLoading}
+                    >
+                      Crear Canción
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </Layout>
   );
 };
 

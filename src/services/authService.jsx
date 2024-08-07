@@ -42,6 +42,7 @@ const authService = {
 
   logout: () => {
     localStorage.removeItem('user');
+    localStorage.removeItem('user__id');
   },
 
   getCurrentUser: () => {

@@ -1,6 +1,6 @@
 
 const songService = {
-  getAllSongs: async (url = null, pageSize = 12) => {
+  getAllSongs: async (url = null, pageSize = 12, owner = null) => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user || !user.token) {
       throw new Error('No se encontró token de autenticación');
@@ -10,6 +10,9 @@ const songService = {
       const baseUrl = url || `${import.meta.env.VITE_API_BASE_URL}/harmonyhub/songs/`;
       const finalUrl = new URL(baseUrl);
       finalUrl.searchParams.append('page_size', pageSize);
+      if (owner) {
+        finalUrl.searchParams.append('owner', owner);
+      }
 
       const response = await fetch(finalUrl, {
         method: 'GET',

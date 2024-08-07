@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import songService from '../services/songService';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 
-const SongList = () => {
+const MySongList = () => {
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,10 +12,29 @@ const SongList = () => {
   const [totalCount, setTotalCount] = useState(0);
   const pageSize = 12;
 
-  const fetchSongs = async (url = null) => {
+  const user = JSON.parse(localStorage.getItem('user__id'));
+  const userId = user ? user : null;
+  const navigate = useNavigate();
+
+  const handleEdit = (songId) => {
+    navigate(`/songs/${songId}`);
+  };
+
+  const handleDelete = async (songId) => {
+    if (window.confirm('¿Estás seguro de que quieres eliminar esta canción?')) {
+      try {
+        await songService.deleteSong(songId);
+        fetchMySongs(); // Recargar la lista después de eliminar
+      } catch (err) {
+        setError('Error al eliminar la canción: ' + err.message);
+      }
+    }
+  };
+
+  const fetchMySongs = async (url = null) => {
     try {
       setLoading(true);
-      const data = await songService.getAllSongs(url, pageSize);
+      const data = await songService.getAllSongs(url, pageSize, userId);
       setSongs(data.results);
       setNextPage(data.next);
       setPreviousPage(data.previous);
@@ -28,14 +47,14 @@ const SongList = () => {
   };
   
   useEffect(() => {
-    fetchSongs();
+    fetchMySongs();
   }, []);
 
   if (loading) {
     return <div className="hero is-fullheight is-light">
       <div className="hero-body">
         <div className="container has-text-centered">
-          <h1 className="title">Cargando...</h1>
+          <h1 className="title">Cargando mis canciones...</h1>
         </div>
       </div>
     </div>;
@@ -57,11 +76,12 @@ const SongList = () => {
         <div className="hero-body">
           <div className="container">
             <div className="box">
-              <h1 className="title has-text-centered">Lista de Canciones</h1>
-              <p className="subtitle has-text-centered">Total de canciones: {totalCount}</p>
+              <h1 className="title has-text-centered">Mis Canciones</h1>
+              <p className="subtitle has-text-centered">Usuario: { userId }</p>
+              <p className="subtitle has-text-centered">Total de mis canciones: {totalCount}</p>
               {songs.length > 0 ? (
                 <div className="columns is-multiline">
-                  {songs.map((song, index) => (
+                  {songs.map((song) => (
                     <div key={song.id} className="column is-one-third">
                       <div className="card">
                         <header className="card-header">
@@ -86,24 +106,40 @@ const SongList = () => {
                             )}
                           </div>
                         </div>
+                        {song.owner === userId && (
+                          <footer className="card-footer">
+                            <button 
+                              className="button is-small is-info card-footer-item" 
+                              onClick={() => handleEdit(song.id)}
+                            >
+                              Modificar
+                            </button>
+                            <button 
+                              className="button is-small is-danger card-footer-item" 
+                              onClick={() => handleDelete(song.id)}
+                            >
+                              Eliminar
+                            </button>
+                          </footer>
+                        )}
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="has-text-centered">No hay canciones disponibles</p>
+                <p className="has-text-centered">No has subido canciones aún</p>
               )}
               <div className="buttons is-centered mt-5">
                 <button 
                   className="button is-primary" 
-                  onClick={() => fetchSongs(previousPage)} 
+                  onClick={() => fetchMySongs(previousPage)} 
                   disabled={!previousPage}
                 >
                   Anterior
                 </button>
                 <button 
                   className="button is-primary" 
-                  onClick={() => fetchSongs(nextPage)} 
+                  onClick={() => fetchMySongs(nextPage)} 
                   disabled={!nextPage}
                 >
                   Siguiente
@@ -117,4 +153,4 @@ const SongList = () => {
   );
 };
 
-export default SongList;
+export default MySongList;

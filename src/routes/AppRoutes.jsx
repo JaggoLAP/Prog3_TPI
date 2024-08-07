@@ -6,6 +6,7 @@ import Login from '../pages/Login';
 import Profile from '../pages/Profile';
 import SongList from '../pages/SongList';
 import CreateSong from '../pages/CreateSong';
+import MySongList from '../pages/MySongList';
 
 const AppRoutes = () => {
   return (
@@ -37,10 +38,18 @@ const AppRoutes = () => {
       <Route
         path="/create-song"
         element={
-          <CreateSong />
+          <PrivateRoute>
+            <CreateSong />
+          </PrivateRoute>
+          
         }
       />
-
+      <Route
+        path="/my-songs"
+        element={
+          <MySongList />
+        }
+      />
     </Routes>
   );
 };
