@@ -5,13 +5,18 @@ import Home from '../pages/Home';
 import Login from '../pages/Login';
 import Profile from '../pages/Profile';
 import SongList from '../pages/SongList';
-import CreateSong from '../pages/CreateSong';
+import Dashboard from '../pages/Dashboard';
+import MusicApp from '../pages/MusicApp';
+
+
 
 const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
+     
+      <Route path="/Dashboard" element={<Dashboard />} />
       <Route 
         path="/profile" 
         element={
@@ -20,6 +25,7 @@ const AppRoutes = () => {
           </PrivateRoute>
         } 
       />
+
       <Route 
         path="/songs" 
         element={
@@ -34,13 +40,8 @@ const AppRoutes = () => {
           </PrivateRoute>
         } 
       />
-      <Route
-        path="/create-song"
-        element={
-          <CreateSong />
-        }
-      />
-
+      <Route path="/Music-app" element={<MusicApp />} />
+      
     </Routes>
   );
 };

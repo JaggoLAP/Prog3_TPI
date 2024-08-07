@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import songService from '../services/songService';
 import { Link } from 'react-router-dom';
+import AppRoutes from '../routes/AppRoutes';
+import NavIniciop from '../components/naviniciop';
+import Footer from '../components/footer';
+
 
 const SongList = () => {
+   
+
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -25,6 +31,7 @@ const SongList = () => {
       setLoading(false);
     }
   };
+
   
   useEffect(() => {
     fetchSongs();
@@ -49,13 +56,17 @@ const SongList = () => {
       </div>
     </div>;
   }
+ 
 
   return (
+   
     <div className="hero is-fullheight" style={{
-      background: "url('https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzMzczODV8MHwxfHJhbmRvbXx8fHx8fHx8fDE3MjI1NTMzMjd8&ixlib=rb-4.0.3&q=80&w=1080') center center",
-      backgroundSize: "cover"
-    }}>
+      background: "url('https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzMzczODV8MHwxfHJhbmRvbXx8fHx8fHx8fDE3MjI1NTMzMjd8&ixlib=rb-4.0.3&q=80&w=1080') center center / contain",
+    }
+    }>
+       <NavIniciop/>
       <div className="hero-body">
+    
         <div className="container">
           <div className="box">
             <h1 className="title has-text-centered">Lista de Canciones</h1>
@@ -113,6 +124,7 @@ const SongList = () => {
           </div>
         </div>
       </div>
+      <Footer/>
     </div>
   );
 };
