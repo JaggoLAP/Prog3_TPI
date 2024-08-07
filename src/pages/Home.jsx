@@ -1,41 +1,31 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-
+import Footer from '../components/footer';
+import NavIni from '../components/NavIni';
 const Home = () => {
     return (
     <div>
         <section className="hero is-fullheight">
-        <div className="hero-body" style={{
-            background: "url('https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzMzczODV8MHwxfHJhbmRvbXx8fHx8fHx8fDE3MjI1NTMzMjd8&ixlib=rb-4.0.3&q=80&w=1080') center center",
-            backgroundSize: "cover"
-        }}>
+        <div className='hero-background'>
+        <div className="hero-body">
+            
             <div className="container has-text-centered">
-            <figure className="image is-128x128 is-inline-block">
-                <img src="src/assets/Logo.png" alt="Sonirepro logo" />
-            </figure>
-            <h1 className="title is-1 has-text-white">Sonirepro</h1>
-            <nav className="level">
-                <div className="level-item has-text-centered">
-                <Link to="/login" className="button is-link">Login</Link>
-                </div>
-                <div className="level-item has-text-centered">
-                <Link to="/profile" className="button is-link">Perfil de Usuario</Link>
-                </div>
-                <div className="level-item has-text-centered">
-                <Link to="/songs" className="button is-link">Listado de canciones</Link>
-                </div>
-                <div className="level-item has-text-centered">
-                <Link to="/create-song" className="button is-link">Subir canciones</Link>
-                </div>
-            </nav>
+            
+            <NavIni/>
             <div className="content has-text-white">
                 <h2 className="subtitle is-2" style={{ color: "#ffcc00" }}>Disfruta y comparte música sin límites</h2>
-                <p><strong>Sonirepro</strong> es la aplicación definitiva para los amantes de la música. Sube tus canciones, crea playlists personalizadas y comparte tus gustos musicales con amigos. Todo en un solo lugar.</p>
+                <p className='txt-home'><strong>Sonirepro</strong> es la aplicación definitiva para los amantes de la música. Sube tus canciones, crea playlists personalizadas y comparte tus gustos musicales con amigos. Todo en un solo lugar.</p>
+                
+            </div>
+            <div className="level-item has-text-centered">
+        <Link to="/songs" className="button is-link">Listado de canciones</Link>
+      </div>
             </div>
             </div>
+           
         </div>
         </section>
-
+      
         <section className="section">
         <div className="container">
             <div className="columns">
@@ -119,11 +109,7 @@ const Home = () => {
         </div>
         </section>
 
-        <footer className="footer">
-        <div className="content has-text-centered">
-            <p>© All rights reserved.</p>
-        </div>
-        </footer>
+     <Footer/>
     </div>
     );
 };

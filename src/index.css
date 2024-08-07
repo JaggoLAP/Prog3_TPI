@@ -4,20 +4,45 @@ body {
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  -moz-osx-font-smoothing: grayscale; 
+box-sizing: border-box;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+.hero is-fullheight .hero-body{
+  display: block;
+  padding: 0;
+}
 
-.hero-body {
-  background-size: cover;
+
+.hero-background {
+  position: relative;
+  width: 100%; /* Ajusta según sea necesario */
+  height: 620px; /* Ajusta según sea necesario */
+  overflow: hidden;
+  background: url("https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzMzczODV8MHwxfHJhbmRvbXx8fHx8fHx8fDE3MjI1NTMzMjd8&ixlib=rb-4.0.3&q=80&w=1080")  left / cover;
+  background-repeat: no-repeat;
+  background-attachment: cover;
+}
+.title.is-1{
+  text-shadow: -1px -1px 0 #0c0c0c52, 1px -1px 0 #000000b0, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+strong{
+  color: #6e6eebd9;
+  font-weight: bolder;
+  font-size: 18px;
 }
 
 .custom-subtitle {
-  color: #ffcc00;
+  color: rgb(247 200 10 / 81%);
+  
+}
+.subtitle.is-2{
+  padding-top: 20px;
+  text-shadow: -1px -1px 0 #0c0c0c52, 1px -1px 0 #000000b0, -1px 1px 0 #000, 1px 1px 0 #000;
 }
 
 .is-vertical-center {
@@ -28,4 +53,46 @@ code {
 .image img {
   border-radius: 15px;
   box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);
+}
+.footer{
+ padding: 0;
+}
+
+/* /components/Nav.css */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background-color: #333; /* Ajusta el color de fondo si es necesario */
+  padding: 10px 20px; /* Ajusta el padding según tus necesidades */
+  box-sizing: border-box;
+}
+
+.level-left,
+.level-right {
+  display: flex;
+  align-items: center;
+}
+
+.image {
+  margin-right: 10px; /* Ajusta el margen si es necesario */
+}
+
+.title {
+  margin: 0; /* Asegura que no haya márgenes adicionales en el título */
+}
+
+.login {
+  margin-left: auto; /* Alinea el botón a la derecha */
+}
+
+.btn-log{
+  margin-left: auto;
+}
+.contenido{
+  display: flex;
+  align-items: stretch;
+  justify-content: space-evenly;
+  top: 10px;
 }

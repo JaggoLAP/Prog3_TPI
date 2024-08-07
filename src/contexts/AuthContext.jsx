@@ -1,26 +1,22 @@
-import React, { createContext, useState, useEffect } from 'react';
-import authService from '../services/authService';
+// src/contexts/AuthContext.js
+import React, { createContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const user = authService.getCurrentUser();
-    if (user) {
-      setUser(user);
-    }
-  }, []);
+  const navigate = useNavigate();
 
   const login = async (username, password) => {
-    const userData = await authService.login(username, password);
-    setUser(userData);
+    // Aquí agregarías la lógica de autenticación, como una llamada a una API
+    // Simulación de login exitoso
+    setUser({ username });
   };
 
   const logout = () => {
-    authService.logout();
     setUser(null);
+    navigate('/'); // Redirigir a la página principal (login) después de cerrar sesión
   };
 
   return (

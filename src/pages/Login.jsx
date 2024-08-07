@@ -1,8 +1,10 @@
-// /pages/Login.jsx
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
+
+import Footer from '../components/footer';
+import Navlog from '../components/Navlog';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -18,7 +20,7 @@ const Login = () => {
     setError('');
     try {
       await login(username, password);
-      navigate('/Profile');
+      navigate('/Dashboard');
     } catch (err) {
       setError('Error al iniciar sesión. Por favor, verifica tus credenciales.');
     }
@@ -28,30 +30,11 @@ const Login = () => {
     <section className="hero is-fullheight">
       <div className="hero-body" style={{
         background: "url('https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzMzczODV8MHwxfHJhbmRvbXx8fHx8fHx8fDE3MjI1NTMzMjd8&ixlib=rb-4.0.3&q=80&w=1080') center center",
-        backgroundSize: "cover"
+        backgroundSize: "cover",
+        display: 'block'
       }}>
-        <div className="container">
-          <div className=' has-text-centered'>
-            <figure className="image is-64x64 is-inline-block">
-              <img src="https://storage.googleapis.com/mixo-files/logos/1722553328822-msica-yc42.svg" alt="Sonirepro logo" />
-            </figure>
-            <h1 className="title is-1 has-text-white">Sonirepro</h1>
-            <p> </p>
-          </div>
-          <nav className="level">
-            <div className="level-item has-text-centered">
-              <Link to="/login" className="button is-link">Login</Link>
-            </div>
-            <div className="level-item has-text-centered">
-              <Link to="/profile" className="button is-link">Perfil de Usuario</Link>
-            </div>
-            <div className="level-item has-text-centered">
-              <Link to="/songs" className="button is-link">Listado de canciones</Link>
-            </div>
-            <div className="level-item has-text-centered">
-              <Link to="/create-song" className="button is-link">Subir canciones</Link>
-            </div>
-          </nav>
+       
+          <Navlog/>
           
           <div className="columns is-centered mt-6">
             <div className="column is-one-third">
@@ -99,9 +82,12 @@ const Login = () => {
               </div>
             </div>
           </div>
-        </div>
+       
+        
       </div>
+     <Footer/>
     </section>
+   
   );
 };
 
