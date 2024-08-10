@@ -26,6 +26,14 @@ const Dashboard = () => {
   const [nextPageMy, setNextPageMy] = useState(null);
   const [previousPageMy, setPreviousPageMy] = useState(null);
   const [totalCountMySongs, settotalCountMySongs] = useState(0);
+  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentSong, setCurrentSong] = useState(null);
+  const [modalData, setModalData] = useState({
+    title: '',
+    year: '',
+    album: '',
+  });
 
   const [newSong, setNewSong] = useState({
     title: '',
@@ -71,9 +79,7 @@ const Dashboard = () => {
   const fetchMySongs = async (url = null) => {
     try {
       setLoadingMy(true);
-      console.log('ingresando el llamado con el usuario: ', userId);
       const dataMy = await songService.getAllSongs(url, userId);
-      console.log('saliendo el llamado con el count: ', dataMy.count);
       setSongsMy(dataMy.results);
       setNextPageMy(dataMy.next);
       setPreviousPageMy(dataMy.previous);
@@ -83,8 +89,7 @@ const Dashboard = () => {
       setErrorMy(err.message);
       setLoadingMy(false);
     }
-    console.log('el userId es: ', userId);
-    console.log('el total de my song es: ', totalCountMySongs);
+    
   };
 
   const fetchPlaylists = async () => {
@@ -138,7 +143,6 @@ const Dashboard = () => {
   };
 
   const handleDeleteSong = async (songId) => {
-    console.log('id de la cancion a eliminar: ', songId);
     if (window.confirm('¿Estás seguro de que quieres eliminar esta canción?')) {
       try {
         await songService.deleteSong(songId);
@@ -149,9 +153,44 @@ const Dashboard = () => {
     }
   };
 
-  const handleEditSong = (songId) => {
-    navigate(`/songs/${songId}`);
+  const openModal = async (songId) => {
+    try {
+      const songData = await songService.getSongById(songId);
+      setCurrentSong(songData);
+      setModalData({
+        title: songData.title || '',
+        year: songData.year || '',
+        album: songData.album || '',
+      });
+      setIsModalOpen(true);
+    } catch (err) {
+      setError('Error al obtener los datos de la canción: ' + err.message);
+    }
   };
+  
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setCurrentSong(null);
+  };
+  
+  const handleInputChangeEdit = (e) => {
+    const { name, value } = e.target;
+    setModalData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+  
+  const handleUpdateSong = async () => {
+    try {
+      await songService.patchSongById(currentSong.id, modalData);
+      setIsModalOpen(false);
+      fetchMySongs();
+    } catch (err) {
+      setError('Error al actualizar la canción: ' + err.message);
+    }
+  };
+  
 
   const handleFileChange = (e) => {
     setNewSong({ ...newSong, file: e.target.files[0] });
@@ -163,18 +202,28 @@ const Dashboard = () => {
   };
 
   const handleUploadSong = async () => {
-    if (!newSong.title || !newSong.year || !newSong.album || !newSong.file) {
-      setError('Todos los campos son obligatorios.');
+    if (!newSong.title) {
+      setError('E Título de la canción es obligatorio.');
+      return;
+    }
+
+    if (!user || !user.token) {
+      setError('No estás autenticado. Por favor, inicia sesión.');
+      setIsLoading(false);
+      navigate('/login');
       return;
     }
 
     try {
       const formData = new FormData();
       formData.append('title', newSong.title);
-      formData.append('year', newSong.year);
-      formData.append('album', newSong.album);
-      formData.append('file', newSong.file);
-
+      if (newSong.year) formData.append('year', newSong.year);
+      if (newSong.album) formData.append('album', newSong.album);
+      if (newSong.song_file) formData.append('song_file', newSong.song_file);
+      console.log('subir titulo: ', newSong.title);
+      console.log('subir year: ', newSong.year);
+      console.log('subir album: ', newSong.album);
+      console.log('subir FormData: ', formData);
       await songService.uploadSong(formData);
       setNewSong({ title: '', year: '', album: '', file: null });
       fetchSongs();
@@ -189,7 +238,6 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    console.log('Pestaña activa:', activeTab);
     if (activeTab === 'Canciones') {
       fetchSongs();
     } else if (activeTab === 'Mis Canciones') {
@@ -302,11 +350,11 @@ const Dashboard = () => {
                   </div>
                 </>
               )}
+
           
             {activeTab === 'Mis Canciones' && (
               <>
                 <h2 className="title has-text-centered">Lista de Mis Canciones</h2>
-                
                 {/* Listar canciones del usuario */}
                 <section className="hero is-fullheight">
                   <div className="hero-body">
@@ -314,7 +362,62 @@ const Dashboard = () => {
                       <div className="box">
                         <p className="subtitle has-text-centered">Usuario: { userId }</p>
                         <p className="subtitle has-text-centered">Total de mis canciones: {totalCountMySongs}</p>
-                        {/*console.log('Caniones: ', songsMy)*/}
+                        {isModalOpen && (
+                          <div className="modal is-active">
+                            <div className="modal-background" onClick={closeModal}></div>
+                            <div className="modal-content">
+                              <div className="box">
+                                <h2 className="title">Editar Canción</h2>
+                                <div className="field">
+                                  <label className="label">Título</label>
+                                  <div className="control">
+                                    <input
+                                      className="input"
+                                      type="text"
+                                      name="title"
+                                      value={modalData.title}
+                                      onChange={handleInputChangeEdit}
+                                    />
+                                  </div>
+                                </div>
+                                <div className="field">
+                                  <label className="label">Año</label>
+                                  <div className="control">
+                                    <input
+                                      className="input"
+                                      type="number"
+                                      name="year"
+                                      value={modalData.year}
+                                      onChange={handleInputChangeEdit}
+                                    />
+                                  </div>
+                                </div>
+                                <div className="field">
+                                  <label className="label">Álbum</label>
+                                  <div className="control">
+                                    <input
+                                      className="input"
+                                      type="number"
+                                      name="album"
+                                      value={modalData.album}
+                                      onChange={handleInputChangeEdit}
+                                    />
+                                  </div>
+                                </div>
+                                <div className="buttons is-centered">
+                                  <button className="button is-light" onClick={closeModal}>
+                                    Cancelar
+                                  </button>
+                                  <button className="button is-primary" onClick={handleUpdateSong}>
+                                    Aceptar
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                            <button className="modal-close is-large" aria-label="close" onClick={closeModal}></button>
+                          </div>
+                        )}
+                        
                         {songsMy.length > 0 ? (
                           <div className="columns is-multiline">
                             {songsMy.map((songMy) => (
@@ -343,16 +446,11 @@ const Dashboard = () => {
                                       )}
                                     </div>
                                   </div>
-                                  {console.log('el userid en my es:', userId)}
-                                  {console.log('el owner en my es:', songMy.owner)}
-                                  {console.log('Comparación:', songMy.owner == userId)}
-                                  {console.log('Tipo de owner:', typeof songMy.owner)}
-                                  {console.log('Tipo de userId:', typeof userId)}
                                   {songMy.owner.toString() === userId && (
                                     <footer className="card-footer">
                                       <button 
                                         className="button is-small is-info card-footer-item" 
-                                        onClick={() => handleEditSong(songMy.id)}
+                                        onClick={() => openModal(songMy.id)}
                                       >
                                         Modificar
                                       </button>
@@ -396,6 +494,8 @@ const Dashboard = () => {
             )}
           
           
+
+
            {activeTab === 'Listas de Reproducción' && (
             <>
               <h2 className="title has-text-centered">Listas de Reproducción</h2>
@@ -509,69 +609,72 @@ const Dashboard = () => {
             )}
 
 
-              {activeTab === 'Subir Canción' && (
-                <div className="box">
-                  <h2 className="title has-text-centered">Subir Nueva Canción</h2>
-                  <div className="field">
-                    <label className="label">Título de la Canción</label>
-                    <div className="control">
-                      <input
-                        className="input"
-                        type="text"
-                        name="title"
-                        value={newSong.title}
-                        onChange={handleInputChange}
-                        placeholder="Título de la canción"
-                      />
-                    </div>
-                  </div>
-                  <div className="field">
-                    <label className="label">Año</label>
-                    <div className="control">
-                      <input
-                        className="input"
-                        type="text"
-                        name="year"
-                        value={newSong.year}
-                        onChange={handleInputChange}
-                        placeholder="Año"
-                      />
-                    </div>
-                  </div>
-                  <div className="field">
-                    <label className="label">Álbum</label>
-                    <div className="control">
-                      <input
-                        className="input"
-                        type="text"
-                        name="album"
-                        value={newSong.album}
-                        onChange={handleInputChange}
-                        placeholder="Álbum"
-                      />
-                    </div>
-                  </div>
-                  <div className="field">
-                    <label className="label">Archivo de Música</label>
-                    <div className="control">
-                      <input
-                        className="input"
-                        type="file"
-                        accept="audio/*"
-                        onChange={handleFileChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="control has-text-centered">
-                    <button
-                      className="button is-primary"
-                      onClick={handleUploadSong}
-                    >
-                      Subir Canción
-                    </button>
+
+
+
+            {activeTab === 'Subir Canción' && (
+              <div className="box">
+                <h2 className="title has-text-centered">Subir Nueva Canción</h2>
+                <div className="field">
+                  <label className="label">Título de la Canción</label>
+                  <div className="control">
+                    <input
+                      className="input"
+                      type="text"
+                      name="title"
+                      value={newSong.title}
+                      onChange={handleInputChange}
+                      placeholder="Título de la canción"
+                    />
                   </div>
                 </div>
-              )}
+                <div className="field">
+                  <label className="label">Año</label>
+                  <div className="control">
+                    <input
+                      className="input"
+                      type="text"
+                      name="year"
+                      value={newSong.year}
+                      onChange={handleInputChange}
+                      placeholder="Año"
+                    />
+                  </div>
+                </div>
+                <div className="field">
+                  <label className="label">Álbum</label>
+                  <div className="control">
+                    <input
+                      className="input"
+                      type="text"
+                      name="album"
+                      value={newSong.album}
+                      onChange={handleInputChange}
+                      placeholder="Álbum"
+                    />
+                  </div>
+                </div>
+                <div className="field">
+                  <label className="label">Archivo de Música</label>
+                  <div className="control">
+                    <input
+                      className="input"
+                      type="file"
+                      accept="audio/*"
+                      onChange={handleFileChange}
+                    />
+                  </div>
+                </div>
+                <div className="control has-text-centered">
+                  <button
+                    className="button is-primary"
+                    onClick={handleUploadSong}
+                  >
+                    Subir Canción
+                  </button>
+                </div>
+              </div>
+            )}
 
 
             </div>

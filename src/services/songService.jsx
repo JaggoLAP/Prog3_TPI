@@ -5,18 +5,15 @@ const songService = {
     if (!user || !user.token) {
       throw new Error('No se encontró token de autenticación');
     }
-    console.log('solo owner: ', owner);
     try {
       const baseUrl = url || `${import.meta.env.VITE_API_BASE_URL}/harmonyhub/songs/`;
       const finalUrl = new URL(baseUrl);
       if (owner) {
         finalUrl.searchParams.append('owner', owner);
-        console.log('url con owner: ', finalUrl);
       }
       if (!finalUrl.searchParams.has('page_size')) {
         finalUrl.searchParams.append('page_size', pageSize);
       }
-      console.log('url final: ', finalUrl);
       const response = await fetch(finalUrl, {
         method: 'GET',
         headers: {
@@ -40,13 +37,13 @@ const songService = {
     }
   },
 
-  // Crear una canción
-  createSong: async (songData) => {
+  // Sube una canción
+  uploadSong: async (songData) => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user || !user.token) {
       throw new Error('No se encontró token de autenticación');
     }
-
+    console.log('datos de la cancion: ', JSON.stringify(songData));
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/harmonyhub/songs/`, {
         method: 'POST',
@@ -61,8 +58,11 @@ const songService = {
         if (response.status === 401) {
           throw new Error('No autorizado. Por favor, inicie sesión nuevamente.');
         }
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Error al crear la canción');
+        const errorDetails = await response.json();
+        console.error('Detalles del error:', errorDetails);
+        throw new Error('Error al crear la canción');
+        // const errorData = await response.json();
+        // throw new Error(errorData.detail || 'Error al crear la canción');
       }
 
       const data = await response.json();
@@ -195,7 +195,9 @@ const songService = {
       throw error;
     }
   },
-   deleteSong: async (songId) => {
+
+  // Borra la canción solicitada
+  deleteSong: async (songId) => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user || !user.token) {
       throw new Error('No se encontró token de autenticación');
@@ -221,7 +223,6 @@ const songService = {
       }
 
       if (response.status === 204) {
-        console.log('Canción borrada con exito');
         return;
       }
 
@@ -231,6 +232,36 @@ const songService = {
       throw error;
     }
   },
+
+  // Guarda la modificación de los datos de una canción
+  patchSongById: async (songId, data) => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user || !user.token) {
+        throw new Error('No se encontró token de autenticación');
+    }
+
+    try {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/harmonyhub/songs/${songId}/`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Token ${user.token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Error al actualizar la canción: ${errorData.detail || response.statusText}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error en patchSongById:', error);
+        throw error;
+    }
+},
+
 };
 
 export default songService;
