@@ -13,13 +13,15 @@ const Home = () => {
             
             <NavIni/>
             <div className="content has-text-white">
-                <h2 className="subtitle is-2" style={{ color: "#ffcc00" }}>Disfruta y comparte música sin límites</h2>
-                <p className='txt-home'><strong>Sonirepro</strong> es la aplicación definitiva para los amantes de la música. Sube tus canciones, crea playlists personalizadas y comparte tus gustos musicales con amigos. Todo en un solo lugar.</p>
+                <h2 className="subtitle is-2 mb-10" style={{ color: "#ffcc00" }}>Disfruta y comparte música sin límites</h2>
+                <br />
+                <p> <br /></p>
+                <p className='txt-home mt-5'><strong>Sonirepro</strong> es la aplicación definitiva para los amantes de la música. Sube tus canciones, crea playlists personalizadas y comparte tus gustos musicales con amigos. Todo en un solo lugar.</p>
                 
             </div>
             <div className="level-item has-text-centered">
-        <Link to="/songs" className="button is-link">Listado de canciones</Link>
-      </div>
+                <Link to="/songs" className="button is-link">Listado de canciones</Link>
+            </div>
             </div>
             </div>
            
@@ -94,7 +96,7 @@ const Home = () => {
         <section className="section">
         <div className="container">
             <blockquote className="blockquote">
-            <p className="title">"<strong>Sonirepro</strong> ha transformado completamente mi experiencia musical. Puedo compartir mis playlists favoritas con amigos y descubrir nueva música todo el tiempo."</p>
+            <p className="title">"Sonirepro ha transformado completamente mi experiencia musical. Puedo compartir mis playlists favoritas con amigos y descubrir nueva música todo el tiempo."</p>
             <div className="media">
                 <figure className="media-left">
                 <p className="image is-64x64">
@@ -102,7 +104,7 @@ const Home = () => {
                 </p>
                 </figure>
                 <div className="media-content">
-                <p className="title is-5">Graham Mitchell</p>
+                <p className="title is-5">Juan Perez</p>
                 </div>
             </div>
             </blockquote>

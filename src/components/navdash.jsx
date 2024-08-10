@@ -1,16 +1,15 @@
-// src/components/Navdash.js
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { AuthContext } from '../contexts/AuthContext'; // Asegúrate de importar el AuthContext
+import { AuthContext } from '../contexts/AuthContext';
 
 const Navdash = () => {
-  const { logout } = useContext(AuthContext); // Obtener la función logout del contexto
+  const { logout } = useContext(AuthContext);
 
   return (
     <div className="contenido">
       <div className=' has-text-centered'>
         <figure className="image is-64x64 is-inline-block">
-          <img src="https://storage.googleapis.com/mixo-files/logos/1722553328822-msica-yc42.svg" alt="Sonirepro logo" />
+          <img src="src/assets/Logo.png" alt="Sonirepro logo" />
         </figure>
         <h1 className="title is-1 has-text-white">Sonirepro</h1>
         <p> </p>

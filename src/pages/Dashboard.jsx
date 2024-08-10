@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import songService from '../services/songService';
+import userService from '../services/userService';
 import Navdash from '../components/navdash';
 import Footer from '../components/footer';
 import Tabs from '../components/tabs';
@@ -18,17 +19,44 @@ const Dashboard = () => {
   const [newPlaylistName, setNewPlaylistName] = useState('');
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [selectedSongs, setSelectedSongs] = useState(new Set());
+
+  const [songsMy, setSongsMy] = useState([]);
+  const [loadingMy, setLoadingMy] = useState(true);
+  const [errorMy, setErrorMy] = useState(null);
+  const [nextPageMy, setNextPageMy] = useState(null);
+  const [previousPageMy, setPreviousPageMy] = useState(null);
+  const [totalCountMySongs, settotalCountMySongs] = useState(0);
+
   const [newSong, setNewSong] = useState({
     title: '',
     year: '',
     album: '',
     file: null,
   });
+  const [firstName, setFirstName] = useState('');
 
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const profileData = await userService.getProfile();
+        if (profileData.user__id) {
+          localStorage.setItem('user__id', profileData.user__id);
+          setFirstName(profileData.first_name);
+        }
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
+  const userId = localStorage.getItem('user__id');
+  
   const fetchSongs = async (url = null) => {
     try {
       setLoading(true);
-      const data = await songService.getAllSongs(url, 12);
+      const data = await songService.getAllSongs(url);
       setSongs(data.results);
       setNextPage(data.next);
       setPreviousPage(data.previous);
@@ -38,6 +66,25 @@ const Dashboard = () => {
       setError(err.message);
       setLoading(false);
     }
+  };
+
+  const fetchMySongs = async (url = null) => {
+    try {
+      setLoadingMy(true);
+      console.log('ingresando el llamado con el usuario: ', userId);
+      const dataMy = await songService.getAllSongs(url, userId);
+      console.log('saliendo el llamado con el count: ', dataMy.count);
+      setSongsMy(dataMy.results);
+      setNextPageMy(dataMy.next);
+      setPreviousPageMy(dataMy.previous);
+      settotalCountMySongs(dataMy.count);
+      setLoadingMy(false);
+    } catch (err) {
+      setErrorMy(err.message);
+      setLoadingMy(false);
+    }
+    console.log('el userId es: ', userId);
+    console.log('el total de my song es: ', totalCountMySongs);
   };
 
   const fetchPlaylists = async () => {
@@ -57,7 +104,7 @@ const Dashboard = () => {
     try {
       await songService.createPlaylist(newPlaylistName);
       setNewPlaylistName('');
-      fetchPlaylists(); // Actualiza la lista de listas de reproducción
+      fetchPlaylists();
     } catch (err) {
       setError(err.message);
     }
@@ -84,19 +131,26 @@ const Dashboard = () => {
         await songService.addSongToPlaylist(selectedPlaylist, songId);
       }
       setSelectedSongs(new Set());
-      fetchPlaylists(); // Actualiza las listas de reproducción
+      fetchPlaylists();
     } catch (err) {
       setError(err.message);
     }
   };
 
   const handleDeleteSong = async (songId) => {
-    try {
-      await songService.deleteSong(songId);
-      setSongs(prevSongs => prevSongs.filter(song => song.id !== songId));
-    } catch (err) {
-      setError(err.message);
+    console.log('id de la cancion a eliminar: ', songId);
+    if (window.confirm('¿Estás seguro de que quieres eliminar esta canción?')) {
+      try {
+        await songService.deleteSong(songId);
+        fetchMySongs();
+      } catch (err) {
+        setError('Error al eliminar la canción: ' + err.message);
+      }
     }
+  };
+
+  const handleEditSong = (songId) => {
+    navigate(`/songs/${songId}`);
   };
 
   const handleFileChange = (e) => {
@@ -123,7 +177,7 @@ const Dashboard = () => {
 
       await songService.uploadSong(formData);
       setNewSong({ title: '', year: '', album: '', file: null });
-      fetchSongs(); // Actualiza la lista de canciones
+      fetchSongs();
     } catch (err) {
       setError(err.message);
     }
@@ -131,8 +185,17 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchSongs();
-    fetchPlaylists(); // Carga las listas de reproducción al montar el componente
+    fetchPlaylists();
   }, []);
+
+  useEffect(() => {
+    console.log('Pestaña activa:', activeTab);
+    if (activeTab === 'Canciones') {
+      fetchSongs();
+    } else if (activeTab === 'Mis Canciones') {
+      fetchMySongs();
+    }
+  }, [activeTab]);  
 
   if (loading) {
     return (
@@ -159,24 +222,24 @@ const Dashboard = () => {
   }
 
   return (
-    <div
-      className="hero is-fullheight"
-      style={{
-        background:
-          "url('https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzMzczODV8MHwxfHJhbmRvbXx8fHx8fHx8fDE3MjI1NTMzMjd8&ixlib=rb-4.0.3&q=80&w=1080') center center / contain",
-      }}
-    >
+    <div className="hero is-fullheight mt-30" style={{
+      background: "url('https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzMzczODV8MHwxfHJhbmRvbXx8fHx8fHx8fDE3MjI1NTMzMjd8&ixlib=rb-4.0.3&q=80&w=1080') center center",
+      backgroundSize: "cover",
+      display:'block'
+    }}>
+
       <Navdash />
       <div className="hero-body">
         <div className="container">
           <div className="box">
-            <h1 className="title has-text-centered">Bienvenido, {user?.username}!</h1>
+            <h1 className="title has-text-centered">Bienvenido, {firstName}!</h1>
             <p className="subtitle has-text-centered">
               Estamos contentos de verte de nuevo.
             </p>
             <Tabs
               tabs={[
                 { label: 'Canciones' },
+                { label: 'Mis Canciones' },
                 { label: 'Listas de Reproducción' },
                 { label: 'Subir Canción' },
               ]}
@@ -211,17 +274,7 @@ const Dashboard = () => {
                                     </audio>
                                   </div>
                                 )}
-                               
-                                <div className="field mt-3">
-                                  <div className="control">
-                                    <button
-                                      className="button is-danger"
-                                      onClick={() => handleDeleteSong(song.id)}
-                                    >
-                                      Eliminar
-                                    </button>
-                                  </div>
-                                </div>
+
                               </div>
                             </div>
                           </div>
@@ -249,117 +302,211 @@ const Dashboard = () => {
                   </div>
                 </>
               )}
+          
+            {activeTab === 'Mis Canciones' && (
+              <>
+                <h2 className="title has-text-centered">Lista de Mis Canciones</h2>
+                
+                {/* Listar canciones del usuario */}
+                <section className="hero is-fullheight">
+                  <div className="hero-body">
+                    <div className="contenido">
+                      <div className="box">
+                        <p className="subtitle has-text-centered">Usuario: { userId }</p>
+                        <p className="subtitle has-text-centered">Total de mis canciones: {totalCountMySongs}</p>
+                        {/*console.log('Caniones: ', songsMy)*/}
+                        {songsMy.length > 0 ? (
+                          <div className="columns is-multiline">
+                            {songsMy.map((songMy) => (
+                              <div key={songMy.id} className="column is-one-third">
+                                <div className="card">
+                                  <header className="card-header">
+                                    <p className="card-header-title">
+                                      {songMy.title}
+                                    </p>
+                                  </header>
+                                  <div className="card-content">
+                                    <div className="content">
+                                      <p><strong>ID:</strong> {songMy.id}</p>
+                                      <p><strong>Año:</strong> {songMy.year || 'No especificado'}</p>
+                                      <p><strong>Duración:</strong> {songMy.duration ? `${songMy.duration} segundos` : 'No especificada'}</p>
+                                      <p><strong>Owner:</strong> {songMy.owner || 'No especificado'}</p>
+                                      <p><strong>Álbum ID:</strong> {songMy.album || 'No especificado'}</p>
+                                      {songMy.song_file && (
+                                        <div>
+                                          <p><strong>Archivo de canción:</strong></p>
+                                          <audio controls className="is-full-width">
+                                            <source src={songMy.song_file} type="audio/mpeg" />
+                                            Tu navegador no soporta el elemento de audio.
+                                          </audio>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                  {console.log('el userid en my es:', userId)}
+                                  {console.log('el owner en my es:', songMy.owner)}
+                                  {console.log('Comparación:', songMy.owner == userId)}
+                                  {console.log('Tipo de owner:', typeof songMy.owner)}
+                                  {console.log('Tipo de userId:', typeof userId)}
+                                  {songMy.owner.toString() === userId && (
+                                    <footer className="card-footer">
+                                      <button 
+                                        className="button is-small is-info card-footer-item" 
+                                        onClick={() => handleEditSong(songMy.id)}
+                                      >
+                                        Modificar
+                                      </button>
+                                      <button 
+                                        className="button is-small is-danger card-footer-item" 
+                                        onClick={() => handleDeleteSong(songMy.id)}
+                                      >
+                                        Eliminar
+                                      </button>
+                                    </footer>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="has-text-centered">No has subido canciones aún</p>
+                        )}
+                        <div className="buttons is-centered mt-5">
+                          <button 
+                            className="button is-primary" 
+                            onClick={() => fetchMySongs(previousPageMy)} 
+                            disabled={!previousPageMy}
+                          >
+                            Anterior
+                          </button>
+                          <button 
+                            className="button is-primary" 
+                            onClick={() => fetchMySongs(nextPageMy)} 
+                            disabled={!nextPageMy}
+                          >
+                            Siguiente
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+              </>
+            )}
+          
+          
            {activeTab === 'Listas de Reproducción' && (
-  <>
-    <h2 className="title has-text-centered">Listas de Reproducción</h2>
-    
-    {/* Crear Nueva Lista de Reproducción */}
-    <div className="box">
-      <h3 className="subtitle has-text-centered">Crear Nueva Lista de Reproducción</h3>
-      <div className="field">
-        <label className="label">Nombre de la Lista</label>
-        <div className="control">
-          <input
-            className="input"
-            type="text"
-            value={newPlaylistName}
-            onChange={(e) => setNewPlaylistName(e.target.value)}
-            placeholder="Nombre de la lista"
-          />
-        </div>
-      </div>
-      <div className="control has-text-centered">
-        <button
-          className="button is-primary"
-          onClick={handleCreatePlaylist}
-        >
-          Crear Lista
-        </button>
-      </div>
-    </div>
-    
-    {/* Agregar Canciones a la Lista */}
-    <div className="box mt-5">
-      <h3 className="subtitle has-text-centered">Agregar Canciones a la Lista</h3>
-      <div className="field">
-        <label className="label">Selecciona una Lista de Reproducción</label>
-        <div className="control">
-          <div className="select">
-            <select
-              value={selectedPlaylist || ''}
-              onChange={(e) => setSelectedPlaylist(e.target.value)}
-            >
-              <option value="" disabled>Selecciona una lista</option>
-              {playlists.map((playlist) => (
-                <option key={playlist.id} value={playlist.id}>
-                  {playlist.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </div>
-      <div className="field">
-        <label className="label">Selecciona Canciones</label>
-        {songs.map((song) => (
-          <div key={song.id} className="field">
-            <div className="control">
-              <label className="checkbox">
-                <input
-                  type="checkbox"
-                  checked={selectedSongs.has(song.id)}
-                  onChange={() => handleSelectSong(song.id)}
-                />
-                {' '}{song.title}
-              </label>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="control has-text-centered">
-        <button
-          className="button is-primary"
-          onClick={handleAddSongsToPlaylist}
-        >
-          Agregar a Lista
-        </button>
-      </div>
-    </div>
-    
-    {/* Listas de Reproducción Existentes */}
-    <div className="box mt-5">
-      <h3 className="subtitle has-text-centered">Listas de Reproducción Existentes</h3>
-      {playlists.length > 0 ? (
-        <div className="columns is-multiline">
-          {playlists.map((playlist) => (
-            <div key={playlist.id} className="column is-one-third">
-              <div className="card">
-                <header className="card-header">
-                  <p className="card-header-title">{playlist.name}</p>
-                </header>
-                <div className="card-content">
-                  <div className="content">
-                    <p><strong>ID:</strong> {playlist.id}</p>
-                    <div className="control has-text-centered">
-                      <button
-                        className="button is-link"
-                        onClick={() => handleViewPlaylist(playlist.id)}
+            <>
+              <h2 className="title has-text-centered">Listas de Reproducción</h2>
+              
+              {/* Crear Nueva Lista de Reproducción */}
+              <div className="box">
+                <h3 className="subtitle has-text-centered">Crear Nueva Lista de Reproducción</h3>
+                <div className="field">
+                  <label className="label">Nombre de la Lista</label>
+                  <div className="control">
+                    <input
+                      className="input"
+                      type="text"
+                      value={newPlaylistName}
+                      onChange={(e) => setNewPlaylistName(e.target.value)}
+                      placeholder="Nombre de la lista"
+                    />
+                  </div>
+                </div>
+                <div className="control has-text-centered">
+                  <button
+                    className="button is-primary"
+                    onClick={handleCreatePlaylist}
+                  >
+                    Crear Lista
+                  </button>
+                </div>
+              </div>
+              
+              {/* Agregar Canciones a la Lista */}
+              <div className="box mt-5">
+                <h3 className="subtitle has-text-centered">Agregar Canciones a la Lista</h3>
+                <div className="field">
+                  <label className="label">Selecciona una Lista de Reproducción</label>
+                  <div className="control">
+                    <div className="select">
+                      <select
+                        value={selectedPlaylist || ''}
+                        onChange={(e) => setSelectedPlaylist(e.target.value)}
                       >
-                        Ver Lista
-                      </button>
+                        <option value="" disabled>Selecciona una lista</option>
+                        {playlists.map((playlist) => (
+                          <option key={playlist.id} value={playlist.id}>
+                            {playlist.name}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                 </div>
+                <div className="field">
+                  <label className="label">Selecciona Canciones</label>
+                  {songs.map((song) => (
+                    <div key={song.id} className="field">
+                      <div className="control">
+                        <label className="checkbox">
+                          <input
+                            type="checkbox"
+                            checked={selectedSongs.has(song.id)}
+                            onChange={() => handleSelectSong(song.id)}
+                          />
+                          {' '}{song.title}
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="control has-text-centered">
+                  <button
+                    className="button is-primary"
+                    onClick={handleAddSongsToPlaylist}
+                  >
+                    Agregar a Lista
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p className="has-text-centered">No hay listas de reproducción disponibles</p>
-      )}
-    </div>
-  </>
-)}
+              
+              {/* Listas de Reproducción Existentes */}
+              <div className="box mt-5">
+                <h3 className="subtitle has-text-centered">Listas de Reproducción Existentes</h3>
+                {playlists.length > 0 ? (
+                  <div className="columns is-multiline">
+                    {playlists.map((playlist) => (
+                      <div key={playlist.id} className="column is-one-third">
+                        <div className="card">
+                          <header className="card-header">
+                            <p className="card-header-title">{playlist.name}</p>
+                          </header>
+                          <div className="card-content">
+                            <div className="content">
+                              <p><strong>ID:</strong> {playlist.id}</p>
+                              <div className="control has-text-centered">
+                                <button
+                                  className="button is-link"
+                                  onClick={() => handleViewPlaylist(playlist.id)}
+                                >
+                                  Ver Lista
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="has-text-centered">No hay listas de reproducción disponibles</p>
+                )}
+              </div>
+            </>
+            )}
 
 
               {activeTab === 'Subir Canción' && (
@@ -425,6 +572,8 @@ const Dashboard = () => {
                   </div>
                 </div>
               )}
+
+
             </div>
           </div>
         </div>

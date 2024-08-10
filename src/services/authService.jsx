@@ -27,6 +27,7 @@ const authService = {
           username: data.username,
           token: data.token
         }));
+        console.log('token: ', data.token);
         return {
           username: data.username,
           token: data.token

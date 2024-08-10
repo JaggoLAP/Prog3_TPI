@@ -1,16 +1,22 @@
 const songService = {
   // Obtener todas las canciones
-  getAllSongs: async (url = null, pageSize = 12) => {
+  getAllSongs: async (url = null, owner = null, pageSize = 12) => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user || !user.token) {
       throw new Error('No se encontró token de autenticación');
     }
-
+    console.log('solo owner: ', owner);
     try {
       const baseUrl = url || `${import.meta.env.VITE_API_BASE_URL}/harmonyhub/songs/`;
       const finalUrl = new URL(baseUrl);
-      finalUrl.searchParams.append('page_size', pageSize);
-
+      if (owner) {
+        finalUrl.searchParams.append('owner', owner);
+        console.log('url con owner: ', finalUrl);
+      }
+      if (!finalUrl.searchParams.has('page_size')) {
+        finalUrl.searchParams.append('page_size', pageSize);
+      }
+      console.log('url final: ', finalUrl);
       const response = await fetch(finalUrl, {
         method: 'GET',
         headers: {
@@ -27,7 +33,6 @@ const songService = {
       }
 
       const data = await response.json();
-      console.log('Los datos: ', data);
       return data;
     } catch (error) {
       console.error('Error al obtener las canciones:', error);
@@ -206,11 +211,21 @@ const songService = {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (jsonError) {
+          errorData = { detail: response.statusText };
+        }
         throw new Error(`Error al eliminar la canción: ${errorData.detail || response.statusText}`);
       }
 
-      return response.json();
+      if (response.status === 204) {
+        console.log('Canción borrada con exito');
+        return;
+      }
+
+      throw new Error('Error inesperado al eliminar la canción');
     } catch (error) {
       console.error('Error en deleteSong:', error);
       throw error;
