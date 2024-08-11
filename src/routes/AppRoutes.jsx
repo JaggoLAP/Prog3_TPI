@@ -7,8 +7,7 @@ import Profile from '../pages/Profile';
 import SongList from '../pages/SongList';
 import Dashboard from '../pages/Dashboard';
 import MusicApp from '../pages/MusicApp';
-
-
+import NotFoundPage from '../pages/404';
 
 const AppRoutes = () => {
   return (
@@ -41,6 +40,13 @@ const AppRoutes = () => {
         } 
       />
       <Route path="/Music-app" element={<MusicApp />} />
+
+      <Route 
+        path="*" 
+        element={
+            <NotFoundPage />
+        } 
+      />
       
     </Routes>
   );

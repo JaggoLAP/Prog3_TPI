@@ -5,38 +5,31 @@ import NavIni from '../components/NavIni';
 const Home = () => {
     return (
     <div>
-        <section className="hero is-fullheight">
-        <div className='hero-background'>
-        <div className="hero-body">
-            
-            <div className="container has-text-centered">
-            
-            <NavIni/>
-            <div className="content has-text-white">
-                <h2 className="subtitle is-2 mb-10" style={{ color: "#ffcc00" }}>Disfruta y comparte música sin límites</h2>
-                <br />
-                <p> <br /></p>
-                <p className='txt-home mt-5'><strong>Sonirepro</strong> es la aplicación definitiva para los amantes de la música. Sube tus canciones, crea playlists personalizadas y comparte tus gustos musicales con amigos. Todo en un solo lugar.</p>
-                
+        <section className="hero">
+            <div className='hero-background'>
+                <div className="hero-body">
+                    <div className="container has-text-centered">
+                        <NavIni/>
+                        <div className="content has-text-white">
+                            <h2 className="subtitle is-2 mb-10" style={{ color: "#ffcc00" }}>Disfruta y comparte música sin límites</h2>
+                            <br />
+                            <p> <br /></p>
+                            <p className='txt-home mt-5'><strong>Sonirepro</strong> es la aplicación definitiva para los amantes de la música. Sube tus canciones, crea playlists personalizadas y comparte tus gustos musicales con amigos. Todo en un solo lugar.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div className="level-item has-text-centered">
-                <Link to="/songs" className="button is-link">Listado de canciones</Link>
-            </div>
-            </div>
-            </div>
-           
-        </div>
         </section>
       
         <section className="section">
-        <div className="container">
-            <div className="columns">
-            <div className="column">
-                <h2 className="title">Vive la música a tu manera</h2>
-                <p>Sube, crea y comparte sin límites</p>
+            <div className="container">
+                <div className="columns">
+                    <div className="column">
+                        <h2 className="title">Vive la música a tu manera</h2>
+                        <p>Sube, crea y comparte sin límites</p>
+                    </div>
+                </div>
             </div>
-            </div>
-        </div>
         </section>
 
         <section className="section">
