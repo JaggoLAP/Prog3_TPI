@@ -43,7 +43,9 @@ const songService = {
     if (!user || !user.token) {
       throw new Error('No se encontró token de autenticación');
     }
-    console.log('datos de la cancion: ', JSON.stringify(songData));
+
+    const jsonData = Object.fromEntries(songData.entries());
+
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/harmonyhub/songs/`, {
         method: 'POST',
@@ -51,7 +53,7 @@ const songService = {
           'Authorization': `Token ${user.token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(songData),
+        body: jsonData,
       });
 
       if (!response.ok) {

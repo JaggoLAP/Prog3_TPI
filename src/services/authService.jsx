@@ -4,8 +4,7 @@ const authService = {
     if (!username || !password) {
       throw new Error('Username and password are required');
     }
-    console.log('direccion: ');
-    console.log(import.meta.env.VITE_API_BASE_URL);
+
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api-auth/`, {
         method: 'POST',
@@ -43,6 +42,9 @@ const authService = {
 
   logout: () => {
     localStorage.removeItem('user');
+    localStorage.removeItem('user__id');
+    setUser(null);
+    navigate('/');
   },
 
   getCurrentUser: () => {

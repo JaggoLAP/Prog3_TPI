@@ -12,8 +12,6 @@ const Login = () => {
   const [error, setError] = useState('');
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
-  console.log('username: ', username);
-  console.log('password: ', password);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

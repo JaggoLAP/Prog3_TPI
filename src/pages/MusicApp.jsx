@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Importar useNavigate
+import { useNavigate } from 'react-router-dom'; 
 
 const MusicApp = () => {
-  const navigate = useNavigate(); // Crear instancia de navigate
+  const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('Listas de Reproducción');
   const [newPlaylistName, setNewPlaylistName] = useState('');
@@ -12,17 +12,17 @@ const MusicApp = () => {
   const [songs, setSongs] = useState([
     { id: 1, title: 'Canción 1' },
     { id: 2, title: 'Canción 2' },
-    // ... otros 84 canciones
+    
   ]);
   const [viewingPlaylist, setViewingPlaylist] = useState(null);
 
-  // Función para manejar la creación de una nueva lista de reproducción
+
   const handleCreatePlaylist = () => {
     if (newPlaylistName.trim() !== '') {
       const newPlaylist = {
         id: new Date().toISOString(),
         name: newPlaylistName,
-        songs: []  // Lista vacía de canciones inicialmente
+        songs: [] 
       };
       setPlaylists([...playlists, newPlaylist]);
       setNewPlaylistName('');

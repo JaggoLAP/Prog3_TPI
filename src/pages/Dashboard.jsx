@@ -39,9 +39,10 @@ const Dashboard = () => {
     title: '',
     year: '',
     album: '',
-    file: null,
+    song_file: null,
   });
   const [firstName, setFirstName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -143,13 +144,18 @@ const Dashboard = () => {
   };
 
   const handleDeleteSong = async (songId) => {
+    setIsLoading(true);
     if (window.confirm('¿Estás seguro de que quieres eliminar esta canción?')) {
       try {
         await songService.deleteSong(songId);
         fetchMySongs();
       } catch (err) {
         setError('Error al eliminar la canción: ' + err.message);
+      } finally {
+        setIsLoading(false);
       }
+    } else {
+      setIsLoading(false);
     }
   };
 
@@ -193,7 +199,7 @@ const Dashboard = () => {
   
 
   const handleFileChange = (e) => {
-    setNewSong({ ...newSong, file: e.target.files[0] });
+    setNewSong({ ...newSong, song_file: e.target.files[0] });
   };
 
   const handleInputChange = (e) => {
@@ -201,35 +207,50 @@ const Dashboard = () => {
     setNewSong({ ...newSong, [name]: value });
   };
 
-  const handleUploadSong = async () => {
-    if (!newSong.title) {
-      setError('E Título de la canción es obligatorio.');
-      return;
-    }
+  const resetForm = () => {
+    setNewSong({
+      title: '',
+      year: '',
+      album: '',
+      song_file: null,
+    });
+  };
+  
+  const handleUploadSong = async (e) => {
+    e.preventDefault(); 
+    setIsLoading(true);
 
-    if (!user || !user.token) {
-      setError('No estás autenticado. Por favor, inicia sesión.');
-      setIsLoading(false);
-      navigate('/login');
-      return;
-    }
+    const formData = new FormData();
+    formData.append('title', newSong.title);
+    if (newSong.year) formData.append('year', newSong.year);
+    if (newSong.album) formData.append('album', newSong.album);
+    if (newSong.song_file) formData.append('song_file', newSong.song_file);
 
     try {
-      const formData = new FormData();
-      formData.append('title', newSong.title);
-      if (newSong.year) formData.append('year', newSong.year);
-      if (newSong.album) formData.append('album', newSong.album);
-      if (newSong.song_file) formData.append('song_file', newSong.song_file);
-      console.log('subir titulo: ', newSong.title);
-      console.log('subir year: ', newSong.year);
-      console.log('subir album: ', newSong.album);
-      console.log('subir FormData: ', formData);
-      await songService.uploadSong(formData);
-      setNewSong({ title: '', year: '', album: '', file: null });
-      fetchSongs();
-    } catch (err) {
-      setError(err.message);
-    }
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/harmonyhub/songs/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Token ${user.token}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error al crear la canción:', errorData);
+        throw new Error(errorData.non_field_errors || 'Error al crear la canción');
+      }
+
+    const result = await response.json();
+    setNewSong({ title: '', year: '', album: '', song_file: null });
+    fetchMySongs();
+    setActiveTab('Mis Canciones');
+  } catch (err) {
+    setError(err.message);
+    console.error('Error al crear la canción:', err);
+  } finally {
+    setIsLoading(false);
+  }
   };
 
   useEffect(() => {
@@ -433,7 +454,6 @@ const Dashboard = () => {
                                       <p><strong>ID:</strong> {songMy.id}</p>
                                       <p><strong>Año:</strong> {songMy.year || 'No especificado'}</p>
                                       <p><strong>Duración:</strong> {songMy.duration ? `${songMy.duration} segundos` : 'No especificada'}</p>
-                                      <p><strong>Owner:</strong> {songMy.owner || 'No especificado'}</p>
                                       <p><strong>Álbum ID:</strong> {songMy.album || 'No especificado'}</p>
                                       {songMy.song_file && (
                                         <div>
@@ -455,7 +475,7 @@ const Dashboard = () => {
                                         Modificar
                                       </button>
                                       <button 
-                                        className="button is-small is-danger card-footer-item" 
+                                        className={`button is-small is-danger card-footer-item ${isLoading ? 'is-loading' : ''}`} 
                                         onClick={() => handleDeleteSong(songMy.id)}
                                       >
                                         Eliminar
@@ -615,6 +635,7 @@ const Dashboard = () => {
             {activeTab === 'Subir Canción' && (
               <div className="box">
                 <h2 className="title has-text-centered">Subir Nueva Canción</h2>
+                <form onSubmit={handleUploadSong} encType="multipart/form-data">
                 <div className="field">
                   <label className="label">Título de la Canción</label>
                   <div className="control">
@@ -660,6 +681,7 @@ const Dashboard = () => {
                     <input
                       className="input"
                       type="file"
+                      name="song_file"
                       accept="audio/*"
                       onChange={handleFileChange}
                     />
@@ -667,12 +689,15 @@ const Dashboard = () => {
                 </div>
                 <div className="control has-text-centered">
                   <button
-                    className="button is-primary"
-                    onClick={handleUploadSong}
+                    className={`button is-primary ${isLoading ? 'is-loading' : ''}`}
+                    // onClick={handleUploadSong}
+                    type="submit"
+                    disabled={isLoading}
                   >
                     Subir Canción
                   </button>
                 </div>
+                </form>
               </div>
             )}
 
