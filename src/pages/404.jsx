@@ -17,7 +17,7 @@ const NotFoundPage = () => {
                 <div className="column is-10 has-text-centered" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <figure className="image" style={{ marginBottom: '2rem' }}>
                     <img 
-                        src="./public/404.png" 
+                        src="https://github.com/JaggoLAP/Prog3_TPI/blob/0853b8515ceb13baf2178402b5c78a58524740d0/public/404.png" 
                         alt="Imagen de error 404" 
                         style={{ width: '200px', height: '200px', objectFit: 'cover' }}
                     />
