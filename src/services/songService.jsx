@@ -8,12 +8,9 @@ const songService = {
     try {
       const baseUrl = url || `${import.meta.env.VITE_API_BASE_URL}/harmonyhub/songs/`;
       const finalUrl = new URL(baseUrl);
+      console.log('url final: ', finalUrl);
       if (owner) {
         finalUrl.searchParams.append('owner', owner);
-      }
-      
-      if (url && url.startsWith('http://')) {
-        finalUrl = finalUrl.replace('http://', 'https://');
       }
 
       if (!finalUrl.searchParams.has('page_size')) {

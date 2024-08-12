@@ -65,6 +65,12 @@ const Dashboard = () => {
   const fetchSongs = async (url = null) => {
     try {
       setLoading(true);
+      console.log('url antes: ', url);
+      if (url && typeof url === 'string' && url.startsWith('http://')) {
+        url = url.replace('http://', 'https://');
+        console.log('url despues: ', url);
+      }
+
       const data = await songService.getAllSongs(url);
       setSongs(data.results);
       setNextPage(data.next);
