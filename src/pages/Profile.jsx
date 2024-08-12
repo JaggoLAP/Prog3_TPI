@@ -7,7 +7,7 @@ import Navdash from '../components/navdash';
 const Profile = () => {
   const [profile, setProfile] = useState(null);
   const [error, setError] = useState('');
-
+ 
   useEffect(() => {
     const fetchProfile = async () => {
       try {

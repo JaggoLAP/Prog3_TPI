@@ -51,7 +51,7 @@ const MusicApp = () => {
     const playlist = playlists.find(pl => pl.id === playlistId);
     setViewingPlaylist(playlist);
   };
-
+ 
   // Función para cerrar los detalles de la lista de reproducción
   const handleClosePlaylistDetails = () => {
     setViewingPlaylist(null);

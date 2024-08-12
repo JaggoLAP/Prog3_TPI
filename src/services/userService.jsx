@@ -28,7 +28,7 @@ const userService = {
     } catch (error) {
       console.error('Error al obtener el perfil:', error);
       throw error;
-    }
+    } 
   },
 };
 

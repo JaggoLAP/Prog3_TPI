@@ -6,7 +6,7 @@
 **Sara Patricia, Martinez**
 
 ---
-
+ 
 ## Descripción del Proyecto
 Este proyecto simula un reproductor de música completo. Permite a los usuarios iniciar sesión, gestionar su perfil, y explorar un catálogo completo de canciones proporcionado por una API privada. Además, los usuarios pueden crear y gestionar sus propias listas de reproducción, añadiendo canciones a estas listas y visualizando su contenido. También incluye la funcionalidad para subir nuevas canciones a la API, ampliando así el repertorio disponible en la aplicación.
 <img src="./extra/1.png">

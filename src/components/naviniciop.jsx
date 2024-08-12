@@ -22,5 +22,5 @@ const NavIniciop = () => {
  
   );
 };
-
+ 
 export default NavIniciop;

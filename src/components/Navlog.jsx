@@ -17,5 +17,5 @@ const Navlog = () => {
     </div>
   );
 };
-
+ 
 export default Navlog;

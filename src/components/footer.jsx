@@ -7,6 +7,6 @@ const Footer = () => {
             <p>© All rights reserved.</p>
         </div>
         </footer>
-    );
+    ); 
 };
 export default Footer;

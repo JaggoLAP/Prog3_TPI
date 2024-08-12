@@ -17,5 +17,5 @@ const NavIni = () => {
     </div>
   );
 };
-
+ 
 export default NavIni;

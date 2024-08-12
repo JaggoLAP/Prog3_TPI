@@ -289,7 +289,7 @@ const Dashboard = () => {
       </div>
     );
   }
-
+ 
   return (
     <div className="hero is-fullheight mt-30" style={{
       background: "url('https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzMzczODV8MHwxfHJhbmRvbXx8fHx8fHx8fDE3MjI1NTMzMjd8&ixlib=rb-4.0.3&q=80&w=1080') center center",

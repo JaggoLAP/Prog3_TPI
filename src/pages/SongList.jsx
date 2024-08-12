@@ -8,7 +8,6 @@ import Footer from '../components/footer';
 
 const SongList = () => {
    
-
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
