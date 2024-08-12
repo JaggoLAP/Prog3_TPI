@@ -10,7 +10,7 @@ const Layout = ({ children }) => {
         <div className="container">
           <div className='has-text-centered'>
             <figure className="image is-64x64 is-inline-block">
-              <img src="src/assets/Logo.png" alt="Sonirepro logo" />
+              <img src="../public/Logo.png" alt="Sonirepro logo" />
             </figure>
             <h1 className="title is-1 has-text-white">Sonirepro</h1>
             <p> </p>
