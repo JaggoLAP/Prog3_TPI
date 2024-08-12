@@ -19,6 +19,9 @@ const SongList = () => {
 
   const fetchSongs = async (url = null) => {
     try {
+      if (url && url.startsWith('http://')) {
+        url = url.replace('http://', 'https://');
+      }
       setLoading(true);
       const data = await songService.getAllSongs(url, 12);
       setSongs(data.results);
