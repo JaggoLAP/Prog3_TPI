@@ -11,6 +11,13 @@ const songService = {
       if (owner) {
         finalUrl.searchParams.append('owner', owner);
       }
+      if (url) {
+        console.log('url mandada: ', url)
+        if (url && url.startsWith('http://')) {
+          url = url.replace('http://', 'https://');
+        }
+        console.log('url mandada modificada: ', url)
+      }
       if (!finalUrl.searchParams.has('page_size')) {
         finalUrl.searchParams.append('page_size', pageSize);
       }

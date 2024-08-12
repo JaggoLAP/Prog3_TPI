@@ -19,14 +19,13 @@ const authService = {
       }
 
       const data = await response.json();
-      console.log('authService - data: ', data);
       
       if (data.token) {
         localStorage.setItem('user', JSON.stringify({
           username: data.username,
           token: data.token
         }));
-        console.log('token: ', data.token);
+
         return {
           username: data.username,
           token: data.token
